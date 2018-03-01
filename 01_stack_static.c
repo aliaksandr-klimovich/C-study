@@ -11,7 +11,7 @@ typedef struct {
     T data[STACK_MAX_SIZE];
     size_t size;
 } Stack_t;
- 
+
 void push(Stack_t *stack, const T value) {
     if (stack->size >= STACK_MAX_SIZE) {
         exit(STACK_OVERFLOW);
@@ -75,15 +75,15 @@ int main(int argc, char *argv[]) {
 	
 	printf("%d\n", pop(&stack));
 	printStack(&stack, printStackValue);
-
+/*
 	// Overflow
-//	for (i = 0; i < 100; i++) {
-//        push(&stack, i);
-//    }
-    
+  	for (i = 0; i < 100; i++) {
+          push(&stack, i);
+      }
+
 
 	// Underflow
-//	pop(&stack);
-
+  	pop(&stack);
+*/
 	return 0;
 }

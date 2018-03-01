@@ -81,9 +81,9 @@ int main(int argc, char *argv[]) {
 	for (i = 0; i < 300; i++) {
         push(s, i);
     }
-    
+
     implode(s);
-    
+
     for (i = 0; i < 300; i++) {
         printf("%d ", peek(s));
         printf("%d ", pop(s));

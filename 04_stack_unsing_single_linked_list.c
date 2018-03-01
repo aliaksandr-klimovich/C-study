@@ -6,9 +6,9 @@
 
 typedef int T;
 
-typedef struct Node_t {
+typedef struct Node {
 	T value;
-	struct Node_t *next;
+	struct Node *next;
 } Node;
 
 void push(Node **head, T value) {
