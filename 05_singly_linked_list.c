@@ -43,6 +43,9 @@
 		
 	void deleteNth(Node **head, unsigned int index)
 		Remove a node at desired index.
+
+	void* popNth(Node **head, unsigned int index)
+		Remove a node at desired index and return its value.
 */
 
 #include <stdio.h>
@@ -171,19 +174,40 @@ void insert(Node *head, unsigned int index, void *value) {
 }
 
 void deleteNth(Node **head, unsigned int index) {
+	Node *prev, *curr, *next;
 	if (index == 0) {
 		pop(head);
 		return;
 	}
-	Node *prev = getNth(*head, index-1);
-	Node *curr = prev->next;  // Can be NULL.
+	prev = getNth(*head, index-1);
+	curr = prev->next;  // Can be NULL.
 	if (curr == NULL) {
 		printf("deleteNth: Can't delete node at index %u.\n", index);
 		return;
 	}
-	Node *next = curr->next;
+	next = curr->next;
 	prev->next = next;
 	free(curr);
+}
+
+void* popNth(Node **head, unsigned int index) {
+	void *value;
+	Node *next, *prev, *curr;
+	if (index == 0) {
+		value = pop(head);
+		return value;
+	}
+	prev = getNth(*head, index-1); 
+	curr = prev->next;  // Can be NULL.
+	if (curr == NULL) {
+		printf("deleteNth: Can't pop node at index %u.\n", index);
+		return NULL;
+	}
+	next = curr->next;
+	prev->next = next;
+	value = curr->value;
+	free(curr);
+	return value;
 }
 
 typedef struct {
