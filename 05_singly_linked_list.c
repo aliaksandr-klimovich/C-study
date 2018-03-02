@@ -10,8 +10,10 @@
 	where head points to the top node.
 	
 	
+
 	Functions description
 	---------------------
+
 	void push(Node **head, void *value)
 		Add a node to the head.
 		
@@ -21,7 +23,7 @@
 	void deleteList(Node **head)
 		Remove whole list.
 	
-	Node* getNth(Node *head, unsigned int n)
+	Node* getNth(Node *head, size_t index)
 		Get the n-th node from list.
 		Node counter strts from 0 and its first position is head.
 		So getNth(&head, 0) returns head node.
@@ -37,16 +39,29 @@
 	
 	Node* getLastButOne(Node *head)
 	
-	void insert(Node *head, unsigned int n, void *value)
+	void insert(Node *head, size_t index, void *value)
 		Insert a node into a list. The node is inserted after(!) n-th node.
 		Node counter begins from head starting from 0.
 		
-	void deleteNth(Node **head, unsigned int index)
+	void deleteNth(Node **head, size_t index)
 		Remove a node at desired index.
 
-	void* popNth(Node **head, unsigned int index)
+	void* popNth(Node **head, size_t index)
 		Remove a node at desired index and return its value.
+		
+	size_t length(const Node *head)
+		Returs the length of the list.
+
+	void** toArray(const Node* head)
+		Converts linked list to array.
+		
+	void fromArray(Node **head, void **array, size_t size)
+		Converts array to linked list.
+	
+	void printList(const Node *head)
+
 */
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,8 +107,8 @@ void deleteList(Node **head) {
 	*head = NULL;
 }
 
-Node* getNth(Node *head, unsigned int index) {
-	unsigned int counter = 0;
+Node* getNth(Node *head, size_t index) {
+	size_t counter = 0;
 	while (counter < index && head) {
 		head = head->next;
 		counter++;
@@ -158,7 +173,7 @@ void* popBack(Node **head) {
 	return value;
 }
 
-void insert(Node *head, unsigned int index, void *value) {
+void insert(Node *head, size_t index, void *value) {
 	Node *prev, *next;
 	Node *tmp = (Node*)malloc(sizeof(Node));
 	tmp->value = value;
@@ -173,7 +188,7 @@ void insert(Node *head, unsigned int index, void *value) {
 	tmp->next = next;
 }
 
-void deleteNth(Node **head, unsigned int index) {
+void deleteNth(Node **head, size_t index) {
 	Node *prev, *curr, *next;
 	if (index == 0) {
 		pop(head);
@@ -190,7 +205,7 @@ void deleteNth(Node **head, unsigned int index) {
 	free(curr);
 }
 
-void* popNth(Node **head, unsigned int index) {
+void* popNth(Node **head, size_t index) {
 	void *value;
 	Node *next, *prev, *curr;
 	if (index == 0) {
@@ -210,15 +225,56 @@ void* popNth(Node **head, unsigned int index) {
 	return value;
 }
 
+size_t length(const Node *head) {
+	size_t counter = 0;
+	while(head) {
+		head = head->next;
+		counter++;
+	}
+	return counter;
+}
+
+void** toArray(const Node* head) {
+	void **values;
+	unsigned int len = length(head);
+	values = (void **)malloc(len * sizeof(void *));
+	while(head) {
+		values[--len] = head->value;
+		head = head->next;
+	}
+	return values;
+}
+
+void fromArray(Node **head, void **array, size_t size) {
+	size_t i = size - 1;
+	if (array == NULL || size == 0) {
+		printf("fromArray: Array is empty.\n");
+		return;
+	}
+	do {
+		push(head, array[i]);
+	} while(i-- != 0);
+}
+
+void printList(const Node *head) {
+	size_t index = 0;
+	while(head) {
+		printf("Index = %u. Value = %i.\n", index, *(int *)(head->value));
+		head = head->next;
+		index++;
+	}
+	printf("\n");
+}
+
 typedef struct {
 	int x;
 	int y;
 } Point;
 
 int main(void) {
-	int i;
+	size_t i;
 	int array[] = {55, 44, 33, 22, 11};
-	int arrayLength = sizeof(array) / sizeof(array[0]);
+	size_t arrayLength = sizeof(array) / sizeof(array[0]);
 	int minusOne = -1;
 	Point *pPoint, point = {.x=10, .y=20};
 	Node *head = NULL;
@@ -236,6 +292,17 @@ int main(void) {
 	pPoint = pop(&head);
 	printf("(%i, %i)\n", pPoint->x, pPoint->y);
 
+	for (i=0; i<arrayLength; i++)
+		push(&head, &array[i]);
+	void **pointers = toArray(head);
+	for (i=0; i<arrayLength; i++) {
+		printf("Pointer: %p. Value: %i.\n", pointers[i], *((int *)(pointers[i])));
+	}
+
 	deleteList(&head);
+	
+	fromArray(&head, pointers, arrayLength);
+	printList(head);
+	
 	return 0;
 }
