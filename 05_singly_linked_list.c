@@ -1,3 +1,50 @@
+/* 
+	Singly linked list
+	==================
+	
+	Represents a linked Node (node). Each node points to next node. 
+	Final node points to NULL.
+	
+		head -> Node -> Node -> NULL
+	
+	where head points to the top node.
+	
+	
+	Functions description
+	---------------------
+	void push(Node **head, void *value)
+		Add a node to the head.
+		
+	void* pop(Node **head)
+		Remove node from head and return its value.
+		
+	void deleteList(Node **head)
+		Remove whole list.
+	
+	Node* getNth(Node *head, unsigned int n)
+		Get the n-th node from list.
+		Node counter strts from 0 and its first position is head.
+		So getNth(&head, 0) returns head node.
+		
+	Node* getLast(Node *head)
+		Returns last node which points to NULL.
+		
+	void pushBack(Node *head, void *value)
+		Add a new value to the end of the list.
+	
+	void* popBack(Node **head)
+		Remove the node from the end and return its value.
+	
+	Node* getLastButOne(Node *head)
+	
+	void insert(Node *head, unsigned int n, void *value)
+		Insert a node into a list. The node is inserted after(!) n-th node.
+		Node counter begins from head starting from 0.
+		
+	void deleteNth(Node **head, unsigned int index)
+		Remove a node at desired index.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -42,9 +89,9 @@ void deleteList(Node **head) {
 	*head = NULL;
 }
 
-Node* getNth(Node *head, int n) {
-	int counter = 0;
-	while (counter < n && head) {
+Node* getNth(Node *head, unsigned int index) {
+	unsigned int counter = 0;
+	while (counter < index && head) {
 		head = head->next;
 		counter++;
 	}
@@ -108,6 +155,37 @@ void* popBack(Node **head) {
 	return value;
 }
 
+void insert(Node *head, unsigned int index, void *value) {
+	Node *prev, *next;
+	Node *tmp = (Node*)malloc(sizeof(Node));
+	tmp->value = value;
+
+	prev = getNth(head, index);
+	if (prev == NULL) {
+		printf("insert: Can't insert at index %u.\n", index);
+		return;
+	}
+	next = prev->next;  // Can be NULL;
+	prev->next = tmp;
+	tmp->next = next;
+}
+
+void deleteNth(Node **head, unsigned int index) {
+	if (index == 0) {
+		pop(head);
+		return;
+	}
+	Node *prev = getNth(*head, index-1);
+	Node *curr = prev->next;  // Can be NULL.
+	if (curr == NULL) {
+		printf("deleteNth: Can't delete node at index %u.\n", index);
+		return;
+	}
+	Node *next = curr->next;
+	prev->next = next;
+	free(curr);
+}
+
 typedef struct {
 	int x;
 	int y;
@@ -117,11 +195,15 @@ int main(void) {
 	int i;
 	int array[] = {55, 44, 33, 22, 11};
 	int arrayLength = sizeof(array) / sizeof(array[0]);
+	int minusOne = -1;
 	Point *pPoint, point = {.x=10, .y=20};
 	Node *head = NULL;
 
 	for (i=0; i<arrayLength; i++)
 		push(&head, &array[i]);
+
+	insert(head, 0, &minusOne);
+	deleteNth(&head, 2);
 
 	for (i=0; i<arrayLength; i++)
 		printf("%d\n", *(int *)(pop(&head)));
@@ -130,6 +212,6 @@ int main(void) {
 	pPoint = pop(&head);
 	printf("(%i, %i)\n", pPoint->x, pPoint->y);
 
-	deleteList(&head);  // The list is empty
+	deleteList(&head);
 	return 0;
 }
