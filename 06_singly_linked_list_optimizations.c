@@ -19,6 +19,8 @@ typedef struct LinkedList {
 	Node *head;
 	Node *tail;
 	size_t size;
+	void* (*copy)(void *);
+	void (*ifree)(void *);
 } LinkedList;
 
 typedef enum LINKED_LIST_ERRORS {
@@ -38,10 +40,12 @@ void throwListError(LINKED_LIST_ERRORS err, int line) {
 	exit(err);
 }
 
-LinkedList* createLinkedList() {
+LinkedList* createLinkedList(void* (*copy)(void*), void (*ifree)(void*)) {
 	LinkedList *list = (LinkedList *)malloc(sizeof(LinkedList));
 	list->head = list->tail = NULL;
 	list->size = 0;
+	list->copy = copy;
+	list->ifree = ifree;
 	return list;
 }
 
@@ -50,20 +54,28 @@ void deleteLinkedList(LinkedList **list) {
 	while ((*list)->head->next) {
 		node = (*list)->head;
 		(*list)->head = (*list)->head->next;
+		(*list)->ifree(node->value);
 		free(node);
 	}
+	(*list)->ifree((*list)->head->value);
 	free((*list)->head);
 	free(*list);
 	*list = NULL;
 }
 
 void pushFront(LinkedList *list, void *value) {
+
+	/*
+		Push value to the front of the linked list.
+		Consider front is head.
+	*/
+
 	Node *node = (Node *)malloc(sizeof(Node));
 	if (node == NULL) {
 		throwListError(MEMORY_EXHAUST, __LINE__);
 	}
 	node->next = list->head;
-	node->value = value;
+	node->value = list->copy(value);
 	list->head = node;
 	if (list->tail == NULL) {
 		list->tail = node;
@@ -71,7 +83,104 @@ void pushFront(LinkedList *list, void *value) {
 	list->size++;
 }
 
+void pushBack(LinkedList *list, void *value) {
+	Node *node = (Node *)malloc(sizeof(Node));
+	if (node == NULL) {
+		throwListError(MEMORY_EXHAUST, __LINE__);
+	}
+	node->next = NULL;
+	node->value = list->copy(value);
+	if (list->tail) {
+		list->tail->next = node;
+	} else {  // list->tail == NULL and list->head == NULL
+		list->head = node;
+	}
+	list->tail = node;
+	list->size++;
+}
+
+void* popFront(LinkedList *list) {
+	Node *node = NULL;
+	void *value = NULL;
+	if (list->head == NULL) {
+		throwListError(LIST_UNDERFLOW, __LINE__);
+	}
+	node = list->head;
+	value = node->value;
+	list->head = list->head->next;
+	if (list->tail == node) {  // tail points to last node (node to delete)
+		list->tail = NULL;
+	}
+	free(node);
+	list->size--;
+
+	return value;
+}
+
+Node* getNth(LinkedList *list, size_t index) {
+	Node *node = NULL;
+	size_t counter = 0;
+	node = list->head;
+	while((counter++) < index && node != NULL) {
+		if (node == NULL) {
+			throwListError(BAD_ELEMENT_NUMBER, __LINE__);
+		}
+		node = node->next;
+	}
+	return node;
+}
+
+void* popBack(LinkedList *list) {
+	Node *node;
+
+}
+
+int* copyInt(int *value) {
+	int *newValue = (int *)malloc(sizeof(int));
+	*newValue = *value;
+	return newValue;
+}
+
+void freeInt(int *value) {
+	free(value);
+}
+
+void printList(LinkedList *list, void (*func)(void *)) {
+	Node *node = list->head;
+	while (node) {
+		func(node->value);
+		node = node->next;
+	}
+	printf("\n");
+}
+
+void printInt(void *value) {
+	printf("%d ", *((int *)value));
+}
+
 int main(void) {
-	printf("Run!\n");
+	LinkedList *list = createLinkedList(
+			(void* (*)(void*)) copyInt,
+			(void (*)(void*)) freeInt
+	);
+	int a, b, c;
+
+	a = 10;
+	b = 20;
+	c = 30;
+
+	pushFront(list, &a);
+	pushFront(list, &b);
+	pushFront(list, &c);
+
+	printList(list, printInt);
+
+	a = 30;
+	c = 10;
+
+	printList(list, printInt);
+
+	deleteLinkedList(&list);
+
 	return 0;
 }
