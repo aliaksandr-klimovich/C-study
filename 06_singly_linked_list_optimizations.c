@@ -113,7 +113,6 @@ void* popFront(LinkedList *list) {
 	}
 	free(node);
 	list->size--;
-
 	return value;
 }
 
@@ -131,8 +130,29 @@ Node* getNth(LinkedList *list, size_t index) {
 }
 
 void* popBack(LinkedList *list) {
-	Node *node;
-
+	Node *node = NULL;
+	void  *value = NULL;
+	if (list->tail == NULL) {
+		throwListError(LIST_UNDERFLOW, __LINE__);
+	}
+	node = list->head;
+	if (node->next == NULL) {
+		value = node->value;
+		list->head = list->tail = NULL;
+		free(node);
+		list->size--;
+		return value;
+	}
+	value = list->tail->value;
+	while(node->next->next) {
+		node = node->next;
+	}
+	// `node` indicates to the last past end node.
+	free(list->tail);
+	node->next = NULL;
+	list->tail = node;
+	list->size--;
+	return value;
 }
 
 int* copyInt(int *value) {
@@ -164,23 +184,42 @@ int main(void) {
 			(void (*)(void*)) freeInt
 	);
 	int a, b, c;
+	int *value;
 
 	a = 10;
 	b = 20;
 	c = 30;
 
+	printf("pushFront a=%d\n", a);
 	pushFront(list, &a);
+
+	printf("pushFront b=%d\n", b);
 	pushFront(list, &b);
+
+	printf("pushFront c=%d\n", c);
 	pushFront(list, &c);
 
+	printf("printList: ");
 	printList(list, printInt);
 
-	a = 30;
-	c = 10;
-
+	value = popBack(list);
+	printf("popBack value=%d\n", *value);
+	printf("printList: ");
 	printList(list, printInt);
+	freeInt(value);
 
+	value = popFront(list);
+	printf("popFront value=%d\n", *value);
+	printf("printList: ");
+	printList(list, printInt);
+	freeInt(value);
+
+	printf("try to change local variables...\n");
+	b = 0;  // Does not take affect now.
+	        // This variables are copied inside linked list.
+
+	printf("printList: ");
+	printList(list, printInt);
 	deleteLinkedList(&list);
-
 	return 0;
 }
