@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 	for(i = 10; i != 0; i--) {
 		push(&head, i);
 	}
-	printf("Size of the stack: %d.\n", getSize(head));
+	printf("Size of the stack: %zu.\n", getSize(head));
 	
 	printf("\nValues:\n");
 	while(head) {

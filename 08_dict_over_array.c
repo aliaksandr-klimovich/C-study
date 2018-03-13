@@ -40,6 +40,7 @@ Dictionary* createDictionary(size_t initSize) {
 	return dict;
 }
 
+/*
 inline static int find(K key, Entry** data, size_t size, size_t *index) {
 	size_t i = 0;
 	size_t j = size-1;
@@ -63,6 +64,7 @@ inline static int find(K key, Entry** data, size_t size, size_t *index) {
 	*index = med;
 	return result;
 }
+*/
 
 int main(int argc, char **argv) {
 

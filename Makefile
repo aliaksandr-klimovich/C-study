@@ -17,7 +17,7 @@ all:
 	$(CC) $(CFLAGS) 04_stack_unsing_single_linked_list.c -o 04.out
 
 05:
-	$(CC) $(CFLAGS) 05_singly_linked_list.c  -o 05.out
+	$(CC) $(CFLAGS) 05_singly_linked_list.c -o 05.out
 
 06:
 	$(CC) $(CFLAGS) 06_singly_linked_list_optimizations.c -o 06.out

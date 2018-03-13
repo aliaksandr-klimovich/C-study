@@ -84,17 +84,17 @@ int main(int argc, char *argv[]) {
 	for (i = 0; i < INIT_SIZE; i++) {
         push(s, i);
     }
-    printf("Stack size: %d.\n", s->size);
+    printf("Stack size: %zu.\n", s->size);
 
     printf("\nPush one element to stack size grow.\n");
     push(s, i);
-    printf("Stack size: %d.\n", s->size);
-    printf("Top index: %d.\n", s->top);
+    printf("Stack size: %zu.\n", s->size);
+    printf("Top index: %zu.\n", s->top);
 
     printf("\nReduce stack to minimum size.\n");
     implode(s);
-    printf("Stack size: %d.\n", s->size);
-    printf("Top index: %d.\n", s->top);
+    printf("Stack size: %zu.\n", s->size);
+    printf("Top index: %zu.\n", s->top);
 
     printf("\nRead data from stack.\n");
     for (i = s->top; i != 0; i--) {

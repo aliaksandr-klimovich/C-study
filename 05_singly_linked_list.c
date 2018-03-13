@@ -180,7 +180,7 @@ void insert(Node *head, size_t index, void *value) {
 
 	prev = getNth(head, index);
 	if (prev == NULL) {
-		printf("insert: Can't insert at index %u.\n", index);
+		printf("insert: Can't insert at index %zu.\n", index);
 		return;
 	}
 	next = prev->next;  // Can be NULL;
@@ -197,7 +197,7 @@ void deleteNth(Node **head, size_t index) {
 	prev = getNth(*head, index-1);
 	curr = prev->next;  // Can be NULL.
 	if (curr == NULL) {
-		printf("deleteNth: Can't delete node at index %u.\n", index);
+		printf("deleteNth: Can't delete node at index %zu.\n", index);
 		return;
 	}
 	next = curr->next;
@@ -215,7 +215,7 @@ void* popNth(Node **head, size_t index) {
 	prev = getNth(*head, index-1); 
 	curr = prev->next;  // Can be NULL.
 	if (curr == NULL) {
-		printf("deleteNth: Can't pop node at index %u.\n", index);
+		printf("deleteNth: Can't pop node at index %zu.\n", index);
 		return NULL;
 	}
 	next = curr->next;
@@ -259,7 +259,7 @@ void fromArray(Node **head, void **array, size_t size) {
 void printList(const Node *head) {
 	size_t index = 0;
 	while(head) {
-		printf("Index = %u. Value = %i.\n", index, *(int *)(head->value));
+		printf("Index = %zu. Value = %i.\n", index, *(int *)(head->value));
 		head = head->next;
 		index++;
 	}

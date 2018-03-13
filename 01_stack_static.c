@@ -42,7 +42,7 @@ void printStackValue(const T value) {
 void printStack(const Stack_t *stack, void (*printStackValue)(const T)) {
     int i;
     int len = stack->size - 1;
-    printf("stack %d > ", stack->size);
+    printf("stack %zu > ", stack->size);
     for (i = 0; i < len; i++) {
         printStackValue(stack->data[i]);
         printf(" | ");

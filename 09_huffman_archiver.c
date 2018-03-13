@@ -13,59 +13,80 @@ char *FILE_NAME = "test_file_to_compress.db";
 FILE *fp;
 
 /*
- * Entry definitions
+ * Node definitions
  * =================
  *
- * Entries are used to store bytes and the frequencies as they appear
+ * Nodes are used to store bytes and the frequencies as they appear
  * in the input file.
  *
  */
 
-typedef struct Entry {
+typedef struct Node {
 	char byte;
 	size_t count;
-	struct Entry *next;
-} Entry;
+	struct Node *next;
+} Node;
 
-void pushEntry(Entry **head, char byte) {
-	Entry *e = (Entry*)malloc(sizeof(Entry));
-	e->byte = byte;
-	e->count = 1;
-	e->next = *head;
-	*head = e;
+typedef struct List {
+	Node *head;
+	Node *tail;
+	size_t size;
+} List;
+
+List* initList(void) {
+	List *list = (List*)malloc(sizeof(List));
+	list->head = list->tail = NULL;
+	list->size = 0;
+	return list;
 }
 
-void deleteAllEntries(Entry **head) {
-	Entry *e = *head;
-	while(*head) {
-		e = *head;
-		*head = (*head)->next;
-		free(e);
+void pushBack(List *list, char byte) {
+	Node *node = (Node*)malloc(sizeof(Node));
+	node->byte = byte;
+	node->count = 1;
+	node->next = NULL;
+	if (list->tail) {
+		list->tail->next = node;
+		list->tail = node;
+	} else {
+		list->head = list->tail = node;
 	}
+	list->size++;
 }
 
-void addEntry(Entry **head, char byte) {
-	Entry *e = *head;
-	if (e == NULL) {
-		pushEntry(head, byte);
+void deleteList(List **list) {
+	Node *node = (*list)->head;
+	while(node) {
+		(*list)->head = (*list)->head->next;
+		free(node);
+		node = (*list)->head;
+	}
+	free(*list);
+	*list = NULL;
+}
+
+void add(List *list, char byte) {
+	Node *node = list->head;
+	if (node == NULL) {
+		pushBack(list, byte);
 		return;
 	}
-	while (e) {
-		if (e->byte == byte) {
-			e->count++;
+	while (node) {
+		if (node->byte == byte) {
+			node->count++;
 			return;
-		} else {
-			e = e->next;
 		}
+		node = node->next;
 	}
-	pushEntry(head, byte);
+	pushBack(list, byte);
 }
 
-void printEntries(Entry *head) {
+void printList(List *list) {
+	Node *node = list->head;
 	printf("Entries: ");
-	while(head) {
-		printf("%02X(%zu) ", head->byte, head->count);
-		head = head->next;
+	while(node) {
+		printf("%02X(%zu) ", node->byte, node->count);
+		node = node->next;
 	}
 	printf("\n");
 }
@@ -79,19 +100,18 @@ void printEntries(Entry *head) {
  */
 
 int main(int argc, char **argv) {
-	Entry *head = NULL;
+	List *list = initList();
 	char c;
 
 	fp = fopen(FILE_NAME, "r");
 	while ((c = fgetc(fp)) != EOF) {
-		addEntry(&head, c);
+		add(list, c);
 	}
-	printEntries(head);
-
-
-
-	deleteAllEntries(&head);
 	fclose(fp);
+
+	printList(list);
+
+	deleteList(&list);
+
 	return 0;
 }
-
