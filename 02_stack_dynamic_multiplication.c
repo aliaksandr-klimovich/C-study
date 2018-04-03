@@ -11,9 +11,9 @@
 typedef int T;
 
 typedef struct {
-	T *data;
-	size_t size;
-	size_t top;
+    T *data;
+    size_t size;
+    size_t top;
 } Stack_t;
 
 Stack_t* createStack() {
@@ -75,10 +75,10 @@ void implode(Stack_t *stack) {
 }
 
 int main(int argc, char *argv[]) {
-	int i;
-	Stack_t *s = createStack();
-	
-	for (i = 0; i < 300; i++) {
+    int i;
+    Stack_t *s = createStack();
+
+    for (i = 0; i < 300; i++) {
         push(s, i);
     }
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
         printf("%d ", peek(s));
         printf("%d ", pop(s));
     }
-	
-	deleteStack(&s);
-	return 0;
+
+    deleteStack(&s);
+    return 0;
 }

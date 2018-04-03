@@ -54,36 +54,36 @@ void printStack(const Stack_t *stack, void (*printStackValue)(const T)) {
 }
 
 int main(int argc, char *argv[]) {
-	Stack_t stack;
-	stack.size = 0;
-	size_t i;
-	
-	push(&stack, 3);
-	printStack(&stack, printStackValue);
-	
-	push(&stack, 5);
-	printStack(&stack, printStackValue);
-	
-	push(&stack, 7);
-	printStack(&stack, printStackValue);
+    Stack_t stack;
+    stack.size = 0;
+    size_t i;
 
-	printf("%d\n", pop(&stack));
-	printStack(&stack, printStackValue);
-	
-	printf("%d\n", pop(&stack));
-	printStack(&stack, printStackValue);
-	
-	printf("%d\n", pop(&stack));
-	printStack(&stack, printStackValue);
+    push(&stack, 3);
+    printStack(&stack, printStackValue);
+
+    push(&stack, 5);
+    printStack(&stack, printStackValue);
+
+    push(&stack, 7);
+    printStack(&stack, printStackValue);
+
+    printf("%d\n", pop(&stack));
+    printStack(&stack, printStackValue);
+
+    printf("%d\n", pop(&stack));
+    printStack(&stack, printStackValue);
+
+    printf("%d\n", pop(&stack));
+    printStack(&stack, printStackValue);
 /*
-	// Overflow
-  	for (i = 0; i < 100; i++) {
+    // Overflow
+      for (i = 0; i < 100; i++) {
           push(&stack, i);
       }
 
 
-	// Underflow
-  	pop(&stack);
+    // Underflow
+      pop(&stack);
 */
-	return 0;
+    return 0;
 }
