@@ -53,7 +53,7 @@ void put(Hashmap **, K, V);                         // TODO test
 void destroyHashmap(Hashmap **);                    // TODO test
 V get(const Hashmap * const, K);                    // TODO test
 void xremove(Hashmap * const map, K);               // TODO test
-void iterMap(Hashmap*, void (*f)(Entry*, void*), void*);  // TODO test
+void iterMap(Hashmap * const, void (*f)(Entry*, void*), void*);  // TODO test
 
 Hashmap* createHashpam(size_t initSize, float loadFactor, float multiplier) {
     Hashmap *map = (Hashmap *)malloc(sizeof(Hashmap));
@@ -161,11 +161,25 @@ void xremove( Hashmap * const map, K key ) {
     map->size--;
 }
 
+void iterMap(Hashmap * const map, void(*f)(Entry*, void*), void *data) {
+    size_t i;
+    for (i = 0; i < map->arrSize; i++) {
+        if (map->data[i]) {
+            f(map->data[i], data);
+        }
+    }
+}
 
-
+void printEntry(Entry *e, void *data) {
+    printf("%s: %s\n", e->key, e->value);
+}
 int main(int argc, char **argv) {
+
     return 0;
 }
+
+
+
 
 
 
