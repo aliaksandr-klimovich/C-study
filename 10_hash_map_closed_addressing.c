@@ -17,7 +17,7 @@ static inline unsigned long long hashcode(unsigned char *str) {
 #define HASHCODE(a) (hashcode(a))
 
 static const float LOAD_FACTOR = 0.72f;
-static const size_t INITIAL_SIZE = 100;
+static const size_t INITIAL_SIZE = 10;
 static const float MULTIPLIER = 2.0f;
 
 typedef char* K;
@@ -42,6 +42,7 @@ static inline void freeEntry(Entry **e) {
 
 #define FREE_ENTRY(a) (freeEntry(a))
 
+// Free Node and containing Entry.
 static inline void freeNode(Node **n) {
     FREE_ENTRY(&((*n)->value));
     free(*n);
@@ -59,14 +60,14 @@ typedef struct Hashmap_t {
     float multiplier;   // Custom multiplier.
 } Hashmap;
 
-Hashmap* createHashmap(size_t initSize, float loadFactor, float multiplier);
-void deleteHashmap(Hashmap **);
-V get(const Hashmap *map, K key);
-void raw_put(Hashmap **_map_, Entry *e);
-void put(Hashmap **_map_, K key, V value);
-void xremove(Hashmap *map, K key);
-Hashmap* rehashUp(Hashmap **_map_, Entry *e);
-void iterMap(Hashmap *, void(*)(Entry*, void*), void*);
+Hashmap* createHashmap(size_t initSize, float loadFactor, float multiplier);    // done
+void deleteHashmap(Hashmap **);                                                 // done
+V get(const Hashmap *map, K key);                                               // done
+void raw_put(Hashmap **_map_, Entry *e);                                        // done
+void put(Hashmap **_map_, K key, V value);                                      // done
+void xremove(Hashmap *map, K key);                                              // done
+Hashmap* rehashUp(Hashmap **_map_, Entry *e);                                   // done
+void iterMap(Hashmap *, void(*)(Entry*, void*), void*);                         // done
 
 Hashmap* createHashmap(size_t initSize, float loadFactor, float multiplier) {
     Hashmap *tmp = (Hashmap *) malloc(sizeof(Hashmap));
@@ -102,7 +103,7 @@ void raw_put(Hashmap **_map_, Entry *e) {
                     // Replace the value with new one.
                     anchor->value->value = e->value;
                     // Value replaced, just skip the rest and jump to finalization.
-                    return;
+                    goto tearDown;
                 }
             }
             // Key was not found in the list.
@@ -117,6 +118,7 @@ void raw_put(Hashmap **_map_, Entry *e) {
         *_map_ = rehashUp(_map_, e);
     }
 
+tearDown:
     (*_map_)->size++;
 }
 
@@ -143,12 +145,12 @@ Hashmap* rehashUp(Hashmap **_map_, Entry *e) {
             target = anchor;
             anchor = anchor->next;
             raw_put(&newMap, target->value);
-            FREE_NODE(&target);
+            free(target);  // Only free a Node, but reserve the Entry value.
         }
     }
     free(map->data);
     free(*_map_);
-    *_map_ = newMap;
+    *_map_ = NULL;
     if (e) {  //  Should consider that Entry can be NULL.
         raw_put(&newMap, e);
     }
@@ -206,7 +208,6 @@ void iterMap(Hashmap *map, void(*f)(Entry*, void*), void *ret_data) {
 void printEntry(Entry *e, void *data) {
     printf("%s: %s\n", e->key, e->value);
 }
-// mapIterate(map, printEntry, NULL);
 
 void deleteHashmap(Hashmap **_map_) {
     Hashmap *map = *_map_;
@@ -230,7 +231,7 @@ void deleteHashmap(Hashmap **_map_) {
 }
 
 int main(int argc, char *argv[]) {
-    Hashmap *map = createHashmap(2, 0.72f, 2.0f);
+    Hashmap *map = createHashmap(10, 0.72f, 2.0f);
     Entry *tmp;
     size_t i;
 
@@ -244,7 +245,15 @@ int main(int argc, char *argv[]) {
     }
 
     iterMap(map, printEntry, NULL);
+
+    char *six_value = get(map, "six");
+    printf("Key: six, value: %s.", six_value);
+
+    xremove(map, "six");
+    iterMap(map, printEntry, NULL);
+
     deleteHashmap(&map);
+    // TODO free *words!
 
     return 0;
 }
