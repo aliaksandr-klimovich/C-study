@@ -88,7 +88,6 @@ void raw_put(Hashmap **_map_, Entry *e) {
     if (map->size < map->limit) {
         // If the element of an array is free, then insert the element there.
         if (map->data[index] == NULL) {
-            // TODO: check key? Hash can return same code!
             Node *newNode = (Node *) malloc(sizeof(Node));
             newNode->next = NULL;
             newNode->value = e;
@@ -253,7 +252,7 @@ int main(int argc, char *argv[]) {
     iterMap(map, printEntry, NULL);
 
     deleteHashmap(&map);
-    // TODO free *words!
+    // TODO free `words`!
 
     return 0;
 }

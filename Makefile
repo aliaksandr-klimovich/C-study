@@ -34,5 +34,8 @@ all:
 10:
 	$(CC) $(CFLAGS) 10_hash_map_closed_addressing.c -o 10.out
 
+11: 
+	$(CC) $(CFLAGS) 11_hash_map_open_addressing.c -o 11.out
+
 clean:
 	rm -rf *.o *.out *.exe *.dSYM/ Debug/
