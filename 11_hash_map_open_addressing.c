@@ -46,16 +46,16 @@ typedef struct Hashmap_t {
     float multiplier;
 } Hashmap;
 
-Hashmap* createHashpam(size_t, float, float);       // TODO test
-void raw_put(Hashmap **, Entry * const);            // TODO test
-void rehashUp(Hashmap **);                          // TODO test
-void put(Hashmap **, K, V);                         // TODO test
-void destroyHashmap(Hashmap **);                    // TODO test
-V get(const Hashmap * const, K);                    // TODO test
-void xremove(Hashmap * const map, K);               // TODO test
-void iterMap(Hashmap * const, void (*f)(Entry*, void*), void*);  // TODO test
+Hashmap* createHashmap(size_t, float, float);
+void raw_put(Hashmap **, Entry * const);
+void rehashUp(Hashmap **);
+void put(Hashmap **, K const, V const);
+void destroyHashmap(Hashmap **);
+V get(const Hashmap * const, K const);
+void xremove(Hashmap * const map, K const);
+void iterMap(Hashmap * const, void (*f)(Entry*, void*), void*);
 
-Hashmap* createHashpam(size_t initSize, float loadFactor, float multiplier) {
+Hashmap* createHashmap(size_t initSize, float loadFactor, float multiplier) {
     Hashmap *map = (Hashmap *)malloc(sizeof(Hashmap));
     map->arrSize = (initSize >= INITIAL_SIZE) ? initSize : INITIAL_SIZE;
     map->loadFactor = (loadFactor >= LOAD_FACTOR && loadFactor <= 1.0f) ? loadFactor: LOAD_FACTOR;
@@ -84,7 +84,7 @@ void raw_put(Hashmap ** map,  Entry * const e) {
     (*map)->size++;
 }
 
-void put(Hashmap **map, K key, V value) {
+void put(Hashmap **map, K const key, V const value) {
     Entry *e = (Entry *) malloc (sizeof(Entry));
     e->key = key;
     e->value = value;
@@ -92,12 +92,12 @@ void put(Hashmap **map, K key, V value) {
 }
 
 void rehashUp(Hashmap **map) {
-    Hashmap * newMap = createHashpam(
+    Hashmap * newMap = createHashmap(
         (size_t)((*map)->arrSize * (*map)->multiplier),
         (*map)->loadFactor,
         (*map)->multiplier);
     size_t i;
-    for (i = 0; i < (*map)->size; i++) {
+    for (i = 0; i < (*map)->arrSize; i++) {
         if ((*map)->data[i]) {
             raw_put(&newMap, (*map)->data[i]);
         }
@@ -119,7 +119,7 @@ void destroyHashmap(Hashmap **map) {
     *map = NULL;
 }
 
-V get(const Hashmap * const map, K key) {
+V get(const Hashmap * const map, K const key) {
     unsigned long long hash = HASHCODE((unsigned char *) key);
     size_t index = (hash % map->arrSize);
     size_t initialIndex = index;
@@ -140,7 +140,7 @@ V get(const Hashmap * const map, K key) {
     return retVal;
 }
 
-void xremove( Hashmap * const map, K key ) {
+void xremove(Hashmap * const map, K const key) {
     unsigned long long hash = HASHCODE((unsigned char *) key);
     size_t index = (hash % map->arrSize);
     size_t initialIndex = index;
@@ -173,50 +173,31 @@ void iterMap(Hashmap * const map, void(*f)(Entry*, void*), void *data) {
 void printEntry(Entry *e, void *data) {
     printf("%s: %s\n", e->key, e->value);
 }
-int main(int argc, char **argv) {
+
+int main(int argc, char *argv[]) {
+    Hashmap *map = createHashmap(10, 0.5f, 2.0f);
+    Entry *tmp;
+    size_t i;
+    char *words[][10] = {
+        {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"},
+        {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
+    };
+
+    for (i = 0; i < 10; i++) {
+        put(&map, strdup(words[0][i]), strdup(words[1][i]));
+    }
+
+    iterMap(map, printEntry, NULL);
+
+    char *six_value = get(map, "six");
+    printf("Key: six, value: %s.\n", six_value);
+
+    xremove(map, "six");
+    iterMap(map, printEntry, NULL);
+
+    destroyHashmap(&map);
+
+    // TODO free `words`!
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
